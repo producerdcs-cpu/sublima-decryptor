@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sublima Decryptor — MVP</title>
+  <style>
+    :root { --bg:#0c0a09; --card:#1c1917; --border:#292524; --amber:#f59e0b; --violet:#a78bfa; --text:#fafaf9; --muted:#a8a29e; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5; }
+    header { border-bottom:1px solid var(--border); padding:1rem 1.5rem; display:flex; align-items:center; gap:.75rem; }
+    header h1 { font-size:1.15rem; } header span { color:var(--violet); font-size:.8rem; }
+    main { max-width:820px; margin:0 auto; padding:2rem 1.25rem; }
+    .hero { text-align:center; margin-bottom:2rem; } .hero p { color:var(--muted); margin-top:.35rem; }
+    .upload-zone { border:2px dashed var(--border); border-radius:1rem; padding:2.5rem 1.5rem; text-align:center; background:var(--card); cursor:pointer; }
+    .upload-zone:hover { border-color:var(--amber); }
+    .upload-zone input { display:none; }
+    button.primary { margin-top:1rem; background:var(--amber); color:#0c0a09; border:none; padding:.65rem 1.5rem; border-radius:.5rem; font-weight:600; cursor:pointer; }
+    button.primary:disabled { opacity:.5; }
+    #preview { margin-top:1.5rem; display:none; } #preview img { max-width:100%; max-height:280px; border-radius:.75rem; }
+    #result { margin-top:2rem; display:none; }
+    .layer { background:var(--card); border:1px solid var(--border); border-radius:.75rem; padding:1.1rem 1.25rem; margin-bottom:.85rem; }
+    .layer h3 { font-size:.85rem; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
+    .layer p, .layer li { color:var(--muted); font-size:.9rem; }
+    .disclaimer { border-left:3px solid var(--amber); padding:.85rem 1rem; background:#1a1614; font-size:.85rem; color:var(--muted); margin-top:1rem; }
+    .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.6rem; margin-bottom:1rem; }
+    .meta-item { background:var(--card); border:1px solid var(--border); border-radius:.5rem; padding:.65rem .8rem; }
+    .meta-item .label { font-size:.7rem; color:var(--muted); text-transform:uppercase; }
+    footer { text-align:center; padding:2rem; color:var(--muted); font-size:.8rem; border-top:1px solid var(--border); margin-top:3rem; }
+  </style>
+</head>
+<body>
+  <header><div>🔮</div><div><h1>Sublima Decryptor</h1><span>MVP · A Luz que Revela o que está Oculto</span></div></header>
+  <main>
+    <div class="hero"><h2>Análise forense de imagem</h2><p>Envie uma imagem para extrair metadados e gerar relatório em camadas.</p></div>
+    <div class="upload-zone" id="zone">
+      <p>📤 Arraste ou <strong style="color:var(--amber)">clique para escolher</strong></p>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:.4rem">JPG, PNG, WEBP, GIF, TIFF · máx. 15MB</p>
+      <input type="file" id="file" accept="image/*" />
+      <div id="preview"><img id="previewImg" alt="preview" /></div>
+      <button class="primary" id="btn" disabled>Analisar</button>
+      <p id="status" style="color:var(--amber);font-size:.85rem;margin-top:.5rem"></p>
+    </div>
+    <div id="result"></div>
+  </main>
+  <footer>Sublima Decryptor v0.2.0-mvp · Producer DCS® · MIT</footer>
+  <script>
+    const API = window.SUBLIMA_API || 'http://localhost:8000';
+    const zone = document.getElementById('zone'), fileInput = document.getElementById('file');
+    const btn = document.getElementById('btn'), preview = document.getElementById('preview');
+    const previewImg = document.getElementById('previewImg'), status = document.getElementById('status');
+    const result = document.getElementById('result');
+    let selectedFile = null;
+    zone.addEventListener('click', e => { if (e.target !== btn) fileInput.click(); });
+    fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+    function setFile(file) {
+      selectedFile = file; previewImg.src = URL.createObjectURL(file);
+      preview.style.display = 'block'; btn.disabled = false; status.textContent = file.name; result.style.display = 'none';
+    }
+    btn.addEventListener('click', async e => {
+      e.stopPropagation(); if (!selectedFile) return;
+      btn.disabled = true; status.textContent = 'Analisando…';
+      const fd = new FormData(); fd.append('file', selectedFile);
+      try {
+        const res = await fetch(API + '/api/analyze', { method: 'POST', body: fd });
+        if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.detail || res.statusText); }
+        renderReport(await res.json()); status.textContent = 'Análise concluída';
+      } catch (err) { status.textContent = 'Erro: ' + err.message; }
+      finally { btn.disabled = false; }
+    });
+    function renderReport(data) {
+      const m = data.meta || {}, layers = data.layers || {};
+      let html = '<div class="meta-grid">';
+      html += item('Formato', m.format);
+      html += item('Dimensões', m.dimensions ? m.dimensions.width + '×' + m.dimensions.height : '—');
+      html += item('Densidade', m.visual_density);
+      html += item('EXIF', data.technical?.has_exif ? 'Sim' : 'Não') + '</div>';
+      for (const key of ['literal','symbolic','geopolitical','memetic','hypotheses']) {
+        const L = layers[key]; if (!L) continue;
+        html += '<div class="layer"><h3>' + (L.title||key) + '</h3>';
+        if (L.summary) html += '<p>' + L.summary + '</p>';
+        if (L.facts?.length) html += '<ul>' + L.facts.map(f => '<li>'+f+'</li>').join('') + '</ul>';
+        if (L.status) html += '<p style="margin-top:.4rem;color:var(--amber)">Status: ' + L.status + '</p>';
+        html += '</div>';
+      }
+      if (data.disclaimer) html += '<div class="disclaimer">' + data.disclaimer + '</div>';
+      result.innerHTML = html; result.style.display = 'block';
+    }
+    function item(l,v){ return '<div class="meta-item"><div class="label">'+l+'</div><div class="value">'+(v||'—')+'</div></div>'; }
+  </script>
+</body>
+</html>
