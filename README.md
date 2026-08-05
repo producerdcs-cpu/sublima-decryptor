@@ -1,7 +1,7 @@
 # 🔮 Sublima Decryptor
 
 <p align="center">
-  <img src="assets/logo.svg" alt="Sublima Decryptor" width="100%"/>
+  <img src="https://raw.githubusercontent.com/producerdcs-cpu/sublima-decryptor/main/assets/logo.svg" alt="Sublima Decryptor" width="100%"/>
 </p>
 
 **A Luz que Revela o que está Oculto**
