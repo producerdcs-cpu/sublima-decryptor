@@ -1,5 +1,9 @@
 # 🔮 Sublima Decryptor
 
+<p align="center">
+  <img src="assets/logo.svg" alt="Sublima Decryptor" width="100%"/>
+</p>
+
 **A Luz que Revela o que está Oculto**
 
 > Plataforma de análise forense digital, esteganografia, semiótica computacional e decodificação de mensagens subliminares.
@@ -34,13 +38,13 @@ O **Sublima Decryptor** detecta, extrai e interpreta **códigos subliminares, es
    Símbolos políticos, religiosos, corporativos, meméticos · árvore de significados · narrativas subliminares.
 
 3. **Deep Scan**  
-   Múltiplos modelos de visão e linguagem (CLIP, LLaVA, Whisper, etc.) + modo local para privacidade.
+   Múltiplos modelos de visão e linguagem + modo local para privacidade.
 
 4. **Relatórios Forenses**  
-   Exportação PDF profissional com camadas de interpretação (literal, simbólica, geopolítica, memética).
+   Exportação PDF profissional com camadas de interpretação.
 
 5. **Modo Criador** *(roadmap)*  
-   Gerar mídia com mensagens ocultas de forma controlada (para testes e educação).
+   Gerar mídia com mensagens ocultas (testes e educação).
 
 ---
 
@@ -48,27 +52,23 @@ O **Sublima Decryptor** detecta, extrai e interpreta **códigos subliminares, es
 
 | Camada | Tecnologia |
 |--------|------------|
-| **Frontend** | Next.js 15 · Tailwind · shadcn/ui · Three.js (árvore 3D de significados) |
+| **Frontend** | Next.js 15 · Tailwind · shadcn/ui · Three.js |
 | **Backend** | Python · FastAPI · Celery |
-| **IA** | Visão + LLM (local e cloud) · modelos de esteganografia |
+| **IA** | Visão + LLM · modelos de esteganografia |
 | **Dados** | PostgreSQL + pgvector |
 | **Deploy** | Docker · Vercel · Railway / AWS |
 
 ---
 
-## 📁 Estrutura do repositório
+## 📁 Estrutura
 
 ```
 sublima-decryptor/
 ├── README.md
+├── assets/logo.svg
 ├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── ROADMAP.md
-│   └── USER_STORIES.md
 ├── prompts/
-│   └── SYSTEM_PROMPT.md
 ├── examples/
-│   └── economist-2026.md
 ├── backend/
 ├── frontend/
 └── .gitignore
@@ -76,21 +76,21 @@ sublima-decryptor/
 
 ---
 
-## 🗺️ Status atual
+## 🗺️ Status
 
 | Fase | Nome | Status |
 |------|------|--------|
-| 0 | Foundation (docs + prompts + exemplo) | ✅ |
-| 1 | MVP — Upload + análise de imagem + relatório | 📋 |
-| 2 | Multimodal (áudio/vídeo/docs) | 📋 |
-| 3 | Deep Scan + comunidade | 📋 |
-| 4 | Deploy + API pública | 📋 |
+| 0 | Foundation | ✅ |
+| 1 | MVP | 📋 |
+| 2 | Multimodal | 📋 |
+| 3 | Deep Scan | 📋 |
+| 4 | Plataforma | 📋 |
 
 Detalhes em [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ---
 
-## 🔬 Exemplo inicial
+## 🔬 Exemplo
 
 Análise da capa **The Economist — The World Ahead 2026**  
 → [examples/economist-2026.md](examples/economist-2026.md)
@@ -99,8 +99,7 @@ Análise da capa **The Economist — The World Ahead 2026**
 
 ## ⚠️ Disclaimer
 
-Este projeto é destinado a **pesquisa, educação, forense digital legítima e análise crítica de mídia**.  
-Não deve ser usado para violação de privacidade ou difusão de teorias sem evidência. Interpretações especulativas sempre vêm com disclaimer.
+Pesquisa, educação e forense digital legítima. Interpretações especulativas sempre com disclaimer.
 
 ---
 
