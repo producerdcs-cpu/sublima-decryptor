@@ -1,4 +1,4 @@
-"""Sublima Decryptor API — Fase 1.1"""
+"""Sublima Decryptor API — v0.2.2-ocr"""
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -12,8 +12,8 @@ from app.services.vision import vision_configured
 
 app = FastAPI(
     title="Sublima Decryptor API",
-    description="Análise forense digital e decodificação subliminar — Fase 1.1",
-    version="0.2.1-fase1.1",
+    description="Análise forense digital — OCR + Visão",
+    version="0.2.2-ocr",
 )
 
 app.add_middleware(
@@ -32,7 +32,7 @@ app.include_router(analyze.router, prefix="/api", tags=["analyze"])
 def root():
     return {
         "service": "Sublima Decryptor",
-        "version": "0.2.1-fase1.1",
+        "version": "0.2.2-ocr",
         "docs": "/docs",
         "slogan": "A Luz que Revela o que está Oculto",
         "vision_configured": vision_configured(),
