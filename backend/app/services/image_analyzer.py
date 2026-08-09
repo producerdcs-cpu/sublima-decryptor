@@ -1,4 +1,4 @@
-"""Motor de análise de imagem — Fase 1.1"""
+"""Motor de análise de imagem — v0.2.2-ocr (técnico + OCR + visão opcional)"""
 from __future__ import annotations
 
 import asyncio
@@ -8,6 +8,7 @@ from typing import Any, Optional
 
 from PIL import Image, ExifTags
 from app.services.vision import analyze_with_vision, vision_configured
+from app.services.ocr import extract_text, ocr_available
 
 
 def _exif_dict(img: Image.Image) -> dict:
@@ -44,11 +45,9 @@ def _merge_vision(layers: dict, vision: Optional[dict]) -> dict:
         layers["literal"]["summary"] = vision["literal_summary"]
         layers["literal"]["source"] = "vision+technical"
     layers["symbolic"] = {
-        "title": "Camada simbólica",
-        "status": "ok",
+        "title": "Camada simbólica", "status": "ok",
         "summary": vision.get("symbolic") or "Elementos detectados pelo modelo de visão.",
-        "elements": vision.get("elements") or [],
-        "source": "vision_model",
+        "elements": vision.get("elements") or [], "source": "vision_model",
     }
     layers["geopolitical"] = {
         "title": "Camada geopolítica / narrativa",
@@ -87,13 +86,20 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
         "literal": {
             "title": "Camada literal",
             "summary": f"Imagem {fmt} {width}×{height}px, modo {mode}. Densidade visual {density}.",
-            "facts": [f"Dimensões: {width} × {height}", f"Formato: {fmt}", f"Arquivo: {original_name or p.name}", f"Tamanho: {p.stat().st_size} bytes"],
+            "facts": [
+                f"Dimensões: {width} × {height}", f"Formato: {fmt}",
+                f"Arquivo: {original_name or p.name}", f"Tamanho: {p.stat().st_size} bytes",
+            ],
             "source": "technical",
         },
-        "symbolic": {"title": "Camada simbólica", "status": "pending_vision_model", "summary": "Configure XAI_API_KEY ou OPENAI_API_KEY.", "elements": []},
-        "geopolitical": {"title": "Camada geopolítica / narrativa", "status": "pending_vision_model", "summary": "Disponível após inventário simbólico."},
-        "memetic": {"title": "Camada memética", "status": "pending_vision_model", "summary": "Disponível após inventário simbólico."},
-        "hypotheses": {"title": "Hipóteses / easter eggs", "items": [], "note": "Somente após evidência visual."},
+        "symbolic": {"title": "Camada simbólica", "status": "pending_vision_model",
+                      "summary": "Configure XAI_API_KEY ou OPENAI_API_KEY.", "elements": []},
+        "geopolitical": {"title": "Camada geopolítica / narrativa", "status": "pending_vision_model",
+                         "summary": "Disponível após inventário simbólico."},
+        "memetic": {"title": "Camada memética", "status": "pending_vision_model",
+                    "summary": "Disponível após inventário simbólico."},
+        "hypotheses": {"title": "Hipóteses / easter eggs", "items": [],
+                       "note": "Somente após evidência visual."},
     }
 
     vision_result = None
@@ -101,7 +107,8 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
     if use_vision and vision_configured():
         try:
             try:
-                vision_result = asyncio.get_event_loop().run_until_complete(analyze_with_vision(str(p), technical_ctx))
+                vision_result = asyncio.get_event_loop().run_until_complete(
+                    analyze_with_vision(str(p), technical_ctx))
             except RuntimeError:
                 vision_result = asyncio.run(analyze_with_vision(str(p), technical_ctx))
         except Exception as e:
@@ -115,24 +122,51 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
         else:
             vision_status = "empty_response"
 
+    ocr_result = extract_text(str(p))
+    if ocr_result.get("text"):
+        layers["literal"]["facts"].append(f"OCR: {ocr_result['word_count']} palavras extraídas")
+        if ocr_result.get("possible_microtext"):
+            layers["literal"]["facts"].append("Possível microtexto detectado")
+        layers["ocr"] = {
+            "title": "OCR / Texto extraído", "status": "ok",
+            "text": ocr_result["text"][:3000],
+            "word_count": ocr_result["word_count"],
+            "char_count": ocr_result["char_count"],
+            "confidence_avg": ocr_result.get("confidence_avg"),
+            "possible_microtext": ocr_result.get("possible_microtext", False),
+            "engine": ocr_result.get("engine"),
+        }
+    else:
+        layers["ocr"] = {
+            "title": "OCR / Texto extraído",
+            "status": "empty" if ocr_result.get("available") else "unavailable",
+            "text": "", "error": ocr_result.get("error"),
+            "available": ocr_result.get("available"),
+        }
+
     report = {
         "meta": {
-            "service": "Sublima Decryptor",
-            "version": "0.2.1-fase1.1",
-            "analyzed_at": now,
-            "original_filename": original_name or p.name,
-            "format": fmt,
-            "dimensions": {"width": width, "height": height},
-            "mode": mode,
-            "file_size_bytes": p.stat().st_size,
-            "visual_density": density,
-            "vision_status": vision_status,
+            "service": "Sublima Decryptor", "version": "0.2.2-ocr",
+            "analyzed_at": now, "original_filename": original_name or p.name,
+            "format": fmt, "dimensions": {"width": width, "height": height},
+            "mode": mode, "file_size_bytes": p.stat().st_size,
+            "visual_density": density, "vision_status": vision_status,
             "vision_configured": vision_configured(),
+            "ocr_available": ocr_available(),
         },
-        "technical": {"exif": exif, "dominant_colors": colors, "has_exif": bool(exif)},
+        "technical": {
+            "exif": exif, "dominant_colors": colors, "has_exif": bool(exif),
+            "ocr_word_count": ocr_result.get("word_count", 0),
+        },
         "layers": layers,
-        "disclaimer": "Interpretações além da camada literal são hipóteses analíticas. Não constituem prova de intenção do autor nem de conspiração.",
-        "next_steps": ["Configure XAI_API_KEY ou OPENAI_API_KEY para camadas simbólicas.", "OCR e esteganografia em fases seguintes."],
+        "disclaimer": (
+            "Interpretações além da camada literal são hipóteses analíticas. "
+            "Não constituem prova de intenção do autor nem de conspiração."
+        ),
+        "next_steps": [
+            "Configure XAI_API_KEY ou OPENAI_API_KEY para camadas simbólicas.",
+            "Esteganografia (LSB/DCT) planejada para Fase 3.",
+        ],
         "prompt_hint": {"system_prompt_path": "prompts/SYSTEM_PROMPT.md"},
     }
     if vision_result and vision_result.get("_provider"):
