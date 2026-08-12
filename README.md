@@ -8,7 +8,7 @@
 
 > Plataforma de análise forense digital, esteganografia, semiótica computacional e decodificação de mensagens subliminares.
 
-**Producer DCS®** | v0.1.0 — Foundation  
+**Producer DCS®** | v0.2.2-ocr — OCR + Deploy-ready  
 **Licença:** MIT  
 **Repositório:** [producerdcs-cpu/sublima-decryptor](https://github.com/producerdcs-cpu/sublima-decryptor)
 
@@ -16,95 +16,41 @@
 
 ## 🎯 O que é
 
-O **Sublima Decryptor** detecta, extrai e interpreta **códigos subliminares, esteganográficos, simbólicos e mensagens ocultas** em praticamente qualquer tipo de arquivo:
+O **Sublima Decryptor** detecta, extrai e interpreta códigos subliminares, esteganográficos e mensagens ocultas em imagens, vídeo, áudio e documentos.
 
-| Tipo | Formatos |
-|------|----------|
-| **Imagens** | JPG, PNG, WEBP, TIFF, SVG, GIF |
-| **Vídeo** | MP4, MOV, AVI, WebM |
-| **Áudio** | MP3, WAV, FLAC, OGG |
-| **Documentos** | PDF, DOCX, PPTX, TXT |
-| **Código** | Python, JS, C++, Rust, Go, HTML, Assembly |
-| **Outros** | Binários, memes, capas de revista, NFTs, QR codes |
+## ✨ Capacidades (MVP atual)
 
----
+1. **OCR** (Tesseract por+eng) + detecção de microtexto  
+2. **Metadados** EXIF + cores dominantes  
+3. **Visão / LLM** opcional (XAI ou OpenAI) para camadas simbólicas  
+4. Relatório em camadas + disclaimer forense
 
-## ✨ Capacidades (visão do produto)
+## 🚀 Deploy
 
-1. **Análise Multimodal Automática**  
-   Esteganografia (LSB, DCT, F5…), frequência, metadados ocultos, OCR avançado, microtextos.
+| Plataforma | Guia |
+|------------|------|
+| **Render (free)** | New Web Service → Docker → health `/api/health` |
+| **Railway** | `railway.toml` + Dockerfile |
+| **Local** | `docker build -t sublima . && docker run -p 8000:8000 sublima` |
 
-2. **Interpretação Simbólica e Narrativa**  
-   Símbolos políticos, religiosos, corporativos, meméticos · árvore de significados · narrativas subliminares.
-
-3. **Deep Scan**  
-   Múltiplos modelos de visão e linguagem + modo local para privacidade.
-
-4. **Relatórios Forenses**  
-   Exportação PDF profissional com camadas de interpretação.
-
-5. **Modo Criador** *(roadmap)*  
-   Gerar mídia com mensagens ocultas (testes e educação).
-
----
-
-## 🏗️ Stack planejada
-
-| Camada | Tecnologia |
-|--------|------------|
-| **Frontend** | Next.js 15 · Tailwind · shadcn/ui · Three.js |
-| **Backend** | Python · FastAPI · Celery |
-| **IA** | Visão + LLM · modelos de esteganografia |
-| **Dados** | PostgreSQL + pgvector |
-| **Deploy** | Docker · Vercel · Railway / AWS |
-
----
+Detalhes: [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ## 📁 Estrutura
 
 ```
 sublima-decryptor/
-├── README.md
-├── assets/logo.svg
+├── backend/          # FastAPI + OCR + visão
+├── frontend/         # Upload UI
 ├── docs/
-├── prompts/
-├── examples/
-├── backend/
-├── frontend/
-└── .gitignore
+├── Dockerfile
+├── render.yaml
+└── railway.toml
 ```
 
----
+## © Autoria
 
-## 🗺️ Status
-
-| Fase | Nome | Status |
-|------|------|--------|
-| 0 | Foundation | ✅ |
-| 1 | MVP | 📋 |
-| 2 | Multimodal | 📋 |
-| 3 | Deep Scan | 📋 |
-| 4 | Plataforma | 📋 |
-
-Detalhes em [docs/ROADMAP.md](docs/ROADMAP.md).
-
----
-
-## 🔬 Exemplo
-
-Análise da capa **The Economist — The World Ahead 2026**  
-→ [examples/economist-2026.md](examples/economist-2026.md)
-
----
-
-## ⚠️ Disclaimer
-
-Pesquisa, educação e forense digital legítima. Interpretações especulativas sempre com disclaimer.
-
----
-
-## 📄 Licença
-
-MIT © 2026 Producer DCS · [producerdcs-cpu](https://github.com/producerdcs-cpu)
+**© 2026 Producer DCS® / DcsProducer® Creative Studio**  
+Código sob licença MIT. Nome do produto, marca e identidade visual reservados.  
+Commits neste repositório documentam autoria técnica e linha do tempo.
 
 **Sublima Decryptor** — *O que está oculto merece ser compreendido, não temido.*
