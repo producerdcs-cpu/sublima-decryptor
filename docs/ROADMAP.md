@@ -1,57 +1,23 @@
-# 🗺️ Roadmap — Sublima Decryptor
+# Roadmap — Sublima Decryptor
 
-## Visão geral
+## Done
 
-| Fase | Nome | Status | Entrega principal |
-|------|------|--------|-------------------|
-| 0 | Foundation | ✅ | Docs, prompts, exemplo Economist, repo |
-| 1 | MVP | 📋 | Upload de imagem → análise simbólica + relatório |
-| 2 | Multimodal | 📋 | Áudio, vídeo, PDF, metadados, OCR |
-| 3 | Deep Scan | 📋 | Múltiplos modelos, esteganografia, árvore 3D |
-| 4 | Plataforma | 📋 | API, histórico, comunidade, deploy |
+- [x] MVP upload + relatório técnico (EXIF, cores, dimensões)
+- [x] Fase 1.1 — integração visão (OpenAI-compatible / xAI)
+- [x] Fase 1.2 — OCR Tesseract (por+eng) + microtexto
+- [x] Docker + Railway config
+- [x] **Deploy produção Render** — 2026-08-12  
+  https://sublima-decryptor.onrender.com  
+  Health OK · OCR live · POST /api/analyze validado
 
----
+## Next
 
-## Fase 0 — Foundation (concluída)
+- [ ] Frontend apontando para URL de produção
+- [ ] Env `XAI_API_KEY` (opcional) para camadas simbólicas
+- [ ] Fase 2 — pré-processamento de imagem / microtexto reforçado
+- [ ] Fase 3 — esteganografia LSB/DCT
+- [ ] Auth + rate limit (se uso público crescer)
 
-- [x] Nome, slogan e posicionamento
-- [x] README e arquitetura
-- [x] System prompt do Motor de Decodificação
-- [x] User stories
-- [x] Análise-exemplo: capa The Economist 2026
-- [x] Repositório público no GitHub
+## Produção
 
-## Fase 1 — MVP
-
-- [ ] Frontend Next.js (upload + preview + painel de camadas)
-- [ ] Backend FastAPI (endpoint de análise de imagem)
-- [ ] Integração com modelo de visão + LLM para interpretação simbólica
-- [ ] Relatório em Markdown/PDF (camadas: literal, simbólica, geopolítica)
-- [ ] Histórico local simples
-
-## Fase 2 — Multimodal
-
-- [ ] Pipeline de áudio (espectrograma + Whisper)
-- [ ] Frames de vídeo + timeline de símbolos
-- [ ] Extração de metadados (EXIF, XMP, PDF comments)
-- [ ] OCR avançado + detecção de microtexto
-- [ ] Suporte a lote (batch)
-
-## Fase 3 — Deep Scan & Esteganografia
-
-- [ ] Detectores LSB / DCT / F5
-- [ ] Visualização radial / globo 3D (Three.js)
-- [ ] Comparação com base de simbolismo (embeddings)
-- [ ] Modo privacidade com modelos locais
-
-## Fase 4 — Plataforma
-
-- [ ] API pública (auth + rate limit)
-- [ ] Conta de usuário + histórico versionado
-- [ ] Export forense profissional
-- [ ] Deploy (Vercel + Railway/AWS)
-
----
-
-**Última atualização:** 05/08/2026  
-**Versão atual:** v0.1.0 — Foundation
+Ver [PRODUCTION.md](PRODUCTION.md)
