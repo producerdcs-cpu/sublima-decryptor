@@ -1,4 +1,4 @@
-# Sublima Decryptor — API (OCR + Visão)
+# Sublima Decryptor — API (OCR + Visão) — Railway ready
 FROM python:3.12-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -22,4 +22,5 @@ ENV HOST=0.0.0.0
 ENV PORT=8000
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Railway injeta $PORT dinamicamente
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
