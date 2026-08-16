@@ -37,7 +37,7 @@ def _entropy(plane: np.ndarray) -> float:
 def analyze_lsb(path: str | Path) -> dict[str, Any]:
     """Analisa os LSBs de uma imagem e retorna relatório estruturado.
 
-    Retorno tipico:
+    Retorno típico:
     {
       "status": "clean" | "suspicious" | "error",
       "summary": str,
@@ -62,8 +62,7 @@ def analyze_lsb(path: str | Path) -> dict[str, Any]:
             ent = _entropy(plane)
 
             # Heurística simples inicial:
-            # - Entropia muito próxima de 1.0 + ratio longe de 0.5 pode indicar payload
-            # - Por enquanto usamos desvio da entropia esperada de imagem natural
+            # - Entropia muito alta + desvio pode indicar payload
             deviation = abs(ent - 0.95)  # valor empírico inicial
             channel_score = min(1.0, deviation * 4.0)
 
