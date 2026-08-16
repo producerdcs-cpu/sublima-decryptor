@@ -1,0 +1,80 @@
+name: Production Audit
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Roda todos os dias às 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:  # permite disparo manual
+
+jobs:
+  production-smoke:
+    name: Smoke + OCR Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Health check
+        id: health
+        run: |
+          set -e
+          URL="https://sublima-decryptor.onrender.com/api/health"
+          echo "Checking $URL ..."
+
+          # Render free tier pode ter cold start — tenta até 3 vezes
+          for i in 1 2 3; do
+            RESPONSE=$(curl -s -w "\n%{http_code}" --max-time 30 "$URL" || true)
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Health OK (attempt $i)"
+              echo "$BODY" | tee health.json
+              echo "status=ok" >> $GITHUB_OUTPUT
+              break
+            else
+              echo "Attempt $i failed (HTTP $HTTP_CODE). Waiting 20s..."
+              sleep 20
+            fi
+          done
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Health check failed after retries"
+            echo "status=fail" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Validate OCR availability
+        run: |
+          set -e
+          if [ ! -f health.json ]; then
+            echo "health.json not found"
+            exit 1
+          fi
+
+          OCR=$(jq -r '.ocr_available // false' health.json)
+          PHASE=$(jq -r '.phase // "unknown"' health.json)
+          VERSION=$(jq -r '.version // "unknown"' health.json)
+
+          echo "Phase: $PHASE"
+          echo "Version: $VERSION"
+          echo "OCR available: $OCR"
+
+          if [ "$OCR" != "true" ]; then
+            echo "OCR is not available in production"
+            exit 1
+          fi
+
+          echo "Production audit passed ✅"
+
+      - name: Upload health artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-health-${{ github.run_id }}
+          path: health.json
+          retention-days: 14
