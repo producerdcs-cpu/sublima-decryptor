@@ -8,13 +8,22 @@
 
 O **Sublima Decryptor** encontra-se em produção com a **Fase 1.2 (OCR)** estável.
 
-- API pública: https://sublima-decryptor.onrender.com
+### Links úteis
+
+| Recurso | URL |
+|---------|-----|
+| **Swagger UI (recomendado)** | https://sublima-decryptor.onrender.com/docs |
+| API Root (JSON de status) | https://sublima-decryptor.onrender.com |
+| Health check | https://sublima-decryptor.onrender.com/api/health |
+| Endpoint de análise | `POST` https://sublima-decryptor.onrender.com/api/analyze |
+| Repositório | https://github.com/producerdcs-cpu/sublima-decryptor |
+
+> **Nota:** A raiz (`/`) retorna JSON de status da API. Para interagir visualmente use sempre **`/docs`**.
+
 - OCR (Tesseract) operacional
 - Relatório em camadas + disclaimer forense
 - Auditoria de produção automatizada via GitHub Actions
 - Fase 3 (Esteganografia LSB) iniciada
-
-Repositório: https://github.com/producerdcs-cpu/sublima-decryptor
 
 ---
 
