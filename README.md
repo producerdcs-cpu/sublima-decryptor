@@ -14,6 +14,19 @@
 
 ---
 
+## 📁 Links de Produção
+
+| Recurso | URL |
+|---------|-----|
+| **Swagger UI (recomendado)** | https://sublima-decryptor.onrender.com/docs |
+| API Root (status JSON) | https://sublima-decryptor.onrender.com |
+| Health | https://sublima-decryptor.onrender.com/api/health |
+| Analyze | `POST` /api/analyze |
+
+> A raiz (`/`) retorna JSON de status. Use **`/docs`** para interagir com a API.
+
+---
+
 ## 🎯 O que é
 
 O **Sublima Decryptor** detecta, extrai e interpreta códigos subliminares, esteganográficos e mensagens ocultas em imagens, vídeo, áudio e documentos.
@@ -23,7 +36,8 @@ O **Sublima Decryptor** detecta, extrai e interpreta códigos subliminares, este
 1. **OCR** (Tesseract por+eng) + detecção de microtexto  
 2. **Metadados** EXIF + cores dominantes  
 3. **Visão / LLM** opcional (XAI ou OpenAI) para camadas simbólicas  
-4. Relatório em camadas + disclaimer forense
+4. Relatório em camadas + disclaimer forense  
+5. **Esteganografia LSB** (Fase 3 em andamento)
 
 ## 🚀 Deploy
 
@@ -39,12 +53,12 @@ Detalhes: [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ```
 sublima-decryptor/
-├── backend/          # FastAPI + OCR + visão
-├── frontend/         # Upload UI
-├── docs/
-├── Dockerfile
-├── render.yaml
-└── railway.toml
+├─ backend/          # FastAPI + OCR + visão + stego
+├─ frontend/         # Upload UI
+├─ docs/
+├─ Dockerfile
+├─ render.yaml
+└─ railway.toml
 ```
 
 ## © Autoria
