@@ -9,6 +9,7 @@ UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 ALLOWED = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif"}
+MAX_BYTES = 15 * 1024 * 1024
 
 
 @router.post("/analyze")
@@ -18,10 +19,12 @@ async def analyze(file: UploadFile = File(...)):
 
     ext = Path(file.filename).suffix.lower()
     if ext not in ALLOWED:
-        raise HTTPException(400, f"Formato não suportado: {ext}")
+        raise HTTPException(400, f"Formato não suportado: {ext}. Use: {', '.join(sorted(ALLOWED))}")
 
     content = await file.read()
-    if len(content) > 15 * 1024 * 1024:
+    if not content:
+        raise HTTPException(400, "Arquivo vazio")
+    if len(content) > MAX_BYTES:
         raise HTTPException(400, "Arquivo maior que 15MB")
 
     file_id = str(uuid.uuid4())
@@ -33,4 +36,7 @@ async def analyze(file: UploadFile = File(...)):
         report["file_id"] = file_id
         return report
     except Exception as e:
-        raise HTTPException(500, f"Erro na análise: {str(e)}")
+        raise HTTPException(500, f"Erro na análise: {str(e)}") from e
+    finally:
+        # mantém arquivo curto prazo para debug; em produção futura limpar
+        pass

@@ -8,7 +8,7 @@
 
 > Plataforma de análise forense digital, esteganografia, semiótica computacional e decodificação de mensagens subliminares.
 
-**Producer DCS®** | v0.2.2-ocr — OCR + Deploy-ready  
+**Producer DCS® / DcsProducer®** | **v0.3.0** — estabilidade + LSB no relatório  
 **Licença:** MIT  
 **Repositório:** [producerdcs-cpu/sublima-decryptor](https://github.com/producerdcs-cpu/sublima-decryptor)
 
@@ -18,53 +18,45 @@
 
 | Recurso | URL |
 |---------|-----|
-| **Swagger UI (recomendado)** | https://sublima-decryptor.onrender.com/docs |
-| API Root (status JSON) | https://sublima-decryptor.onrender.com |
+| **Swagger UI** | https://sublima-decryptor.onrender.com/docs |
+| API Root | https://sublima-decryptor.onrender.com |
 | Health | https://sublima-decryptor.onrender.com/api/health |
 | Analyze | `POST` /api/analyze |
 
-> A raiz (`/`) retorna JSON de status. Use **`/docs`** para interagir com a API.
-
 ---
 
-## 🎯 O que é
+## ✨ Capacidades (v0.3)
 
-O **Sublima Decryptor** detecta, extrai e interpreta códigos subliminares, esteganográficos e mensagens ocultas em imagens, vídeo, áudio e documentos.
-
-## ✨ Capacidades (MVP atual)
-
-1. **OCR** (Tesseract por+eng) + detecção de microtexto  
+1. **OCR** (Tesseract por+eng) + microtexto  
 2. **Metadados** EXIF + cores dominantes  
-3. **Visão / LLM** opcional (XAI ou OpenAI) para camadas simbólicas  
-4. Relatório em camadas + disclaimer forense  
-5. **Esteganografia LSB** (Fase 3 em andamento)
+3. **Visão / LLM** opcional (XAI ou OpenAI)  
+4. **Relatório em camadas** + disclaimer forense  
+5. **Esteganografia LSB** (score estatístico por canal)  
+6. Testes mínimos de regressão (`backend/tests`)
 
-## 🚀 Deploy
+## 🚀 60 segundos (local)
+
+```bash
+cd backend
+pip install -r requirements.txt
+pytest -q
+uvicorn app.main:app --reload --port 8000
+# abra http://localhost:8000/docs
+```
+
+## Deploy
 
 | Plataforma | Guia |
 |------------|------|
-| **Render (free)** | New Web Service → Docker → health `/api/health` |
-| **Railway** | `railway.toml` + Dockerfile |
+| **Render** | Docker · health `/api/health` |
+| **Railway** | `railway.toml` |
 | **Local** | `docker build -t sublima . && docker run -p 8000:8000 sublima` |
 
-Detalhes: [docs/DEPLOY.md](docs/DEPLOY.md)
-
-## 📁 Estrutura
-
-```
-sublima-decryptor/
-├─ backend/          # FastAPI + OCR + visão + stego
-├─ frontend/         # Upload UI
-├─ docs/
-├─ Dockerfile
-├─ render.yaml
-└─ railway.toml
-```
+Detalhes: [docs/DEPLOY.md](docs/DEPLOY.md) · [docs/V0_3.md](docs/V0_3.md) · [CHANGELOG.md](CHANGELOG.md)
 
 ## © Autoria
 
 **© 2026 Producer DCS® / DcsProducer® Creative Studio**  
-Código sob licença MIT. Nome do produto, marca e identidade visual reservados.  
-Commits neste repositório documentam autoria técnica e linha do tempo.
+Código sob licença MIT. Nome do produto e identidade visual reservados.
 
 **Sublima Decryptor** — *O que está oculto merece ser compreendido, não temido.*

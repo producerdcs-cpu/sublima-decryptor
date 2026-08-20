@@ -1,4 +1,4 @@
-"""Sublima Decryptor API — v0.2.2-ocr"""
+"""Sublima Decryptor API — v0.3.0"""
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -11,10 +11,15 @@ from app.routers import analyze, health
 from app.services.vision import vision_configured
 from app.services.ocr import ocr_available
 
+APP_VERSION = "0.3.0"
+
 app = FastAPI(
     title="Sublima Decryptor API",
-    description="Análise forense digital — OCR + Visão + Esteganografia (em evolução)",
-    version="0.2.2-ocr",
+    description=(
+        "Análise forense digital — OCR + Visão + Esteganografia LSB · "
+        "© DcsProducer® / Producer DCS®"
+    ),
+    version=APP_VERSION,
 )
 
 app.add_middleware(
@@ -33,11 +38,13 @@ app.include_router(analyze.router, prefix="/api", tags=["analyze"])
 def root():
     return {
         "service": "Sublima Decryptor",
-        "version": "0.2.2-ocr",
+        "version": APP_VERSION,
         "slogan": "A Luz que Revela o que está Oculto",
+        "brand": "© DcsProducer®",
         "status": {
             "ocr_available": ocr_available(),
             "vision_configured": vision_configured(),
+            "stego_lsb": True,
         },
         "links": {
             "docs": "/docs",

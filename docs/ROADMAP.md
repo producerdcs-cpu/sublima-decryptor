@@ -5,24 +5,20 @@
 - [x] MVP upload + relatório técnico (EXIF, cores, dimensões)
 - [x] Fase 1.1 — integração visão (OpenAI-compatible / xAI)
 - [x] Fase 1.2 — OCR Tesseract (por+eng) + microtexto
-- [x] Docker + Railway config
-- [x] **Deploy produção Render** — 2026-08-12  
-  https://sublima-decryptor.onrender.com  
-  Health OK · OCR live · POST /api/analyze validado
-- [x] Auditoria de produção automatizada (GitHub Actions)
-
-## In Progress
-
-- [ ] **Fase 3 — Esteganografia (LSB/DCT)** — design iniciado  
-  Ver [FASE_3_ESTEGANOGRAFIA.md](FASE_3_ESTEGANOGRAFIA.md)
+- [x] Docker + Railway / Render
+- [x] Deploy produção Render — https://sublima-decryptor.onrender.com
+- [x] Auditoria de produção (GitHub Actions)
+- [x] **v0.3.0 — estabilidade** (2026-08-20)  
+  Health + analyze estáveis · LSB no relatório · disclaimer · testes
 
 ## Next
 
+- [ ] Tag `v0.3.0` + redeploy Render
 - [ ] Frontend apontando para URL de produção
-- [ ] Env `XAI_API_KEY` (opcional) para camadas simbólicas
-- [ ] Fase 2 — pré-processamento de imagem / microtexto reforçado
-- [ ] Auth + rate limit (se uso público crescer)
+- [ ] Extração de payload LSB (além de score estatístico)
+- [ ] Auth + rate limit se tráfego crescer
+- [ ] Fase 2 — pré-processamento / microtexto reforçado
 
 ## Produção
 
-Ver [PRODUCTION.md](PRODUCTION.md)
+Ver [PRODUCTION.md](PRODUCTION.md) · [V0_3.md](V0_3.md)

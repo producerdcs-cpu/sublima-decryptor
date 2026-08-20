@@ -1,4 +1,4 @@
-"""Motor de análise de imagem — v0.2.2-ocr (técnico + OCR + visão opcional)"""
+"""Motor de análise de imagem — v0.3.0 (técnico + OCR + visão + LSB)"""
 from __future__ import annotations
 
 import asyncio
@@ -9,6 +9,16 @@ from typing import Any, Optional
 from PIL import Image, ExifTags
 from app.services.vision import analyze_with_vision, vision_configured
 from app.services.ocr import extract_text, ocr_available
+from app.services.steganography import analyze_lsb
+
+APP_VERSION = "0.3.0"
+
+FORENSIC_DISCLAIMER = (
+    "Relatório forense em camadas (Sublima Decryptor v0.3). "
+    "Interpretações além da camada literal e da detecção estatística LSB são hipóteses analíticas. "
+    "Não constituem prova de intenção do autor, de mensagem oculta definitiva nem de conspiração. "
+    "Use apenas como apoio investigativo. © DcsProducer®."
+)
 
 
 def _exif_dict(img: Image.Image) -> dict:
@@ -45,9 +55,11 @@ def _merge_vision(layers: dict, vision: Optional[dict]) -> dict:
         layers["literal"]["summary"] = vision["literal_summary"]
         layers["literal"]["source"] = "vision+technical"
     layers["symbolic"] = {
-        "title": "Camada simbólica", "status": "ok",
+        "title": "Camada simbólica",
+        "status": "ok",
         "summary": vision.get("symbolic") or "Elementos detectados pelo modelo de visão.",
-        "elements": vision.get("elements") or [], "source": "vision_model",
+        "elements": vision.get("elements") or [],
+        "source": "vision_model",
     }
     layers["geopolitical"] = {
         "title": "Camada geopolítica / narrativa",
@@ -78,28 +90,53 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
     fmt = img.format or p.suffix.lstrip(".").upper()
     exif = _exif_dict(img)
     colors = _color_summary(img)
-    density = "alta" if width * height > 1_000_000 else ("média" if width * height > 300_000 else "baixa")
+    density = (
+        "alta"
+        if width * height > 1_000_000
+        else ("média" if width * height > 300_000 else "baixa")
+    )
     now = datetime.now(timezone.utc).isoformat()
-    technical_ctx = {"format": fmt, "width": width, "height": height, "has_exif": bool(exif), "dominant_colors": colors[:3]}
+    technical_ctx = {
+        "format": fmt,
+        "width": width,
+        "height": height,
+        "has_exif": bool(exif),
+        "dominant_colors": colors[:3],
+    }
 
-    layers = {
+    layers: dict[str, Any] = {
         "literal": {
             "title": "Camada literal",
             "summary": f"Imagem {fmt} {width}×{height}px, modo {mode}. Densidade visual {density}.",
             "facts": [
-                f"Dimensões: {width} × {height}", f"Formato: {fmt}",
-                f"Arquivo: {original_name or p.name}", f"Tamanho: {p.stat().st_size} bytes",
+                f"Dimensões: {width} × {height}",
+                f"Formato: {fmt}",
+                f"Arquivo: {original_name or p.name}",
+                f"Tamanho: {p.stat().st_size} bytes",
             ],
             "source": "technical",
         },
-        "symbolic": {"title": "Camada simbólica", "status": "pending_vision_model",
-                      "summary": "Configure XAI_API_KEY ou OPENAI_API_KEY.", "elements": []},
-        "geopolitical": {"title": "Camada geopolítica / narrativa", "status": "pending_vision_model",
-                         "summary": "Disponível após inventário simbólico."},
-        "memetic": {"title": "Camada memética", "status": "pending_vision_model",
-                    "summary": "Disponível após inventário simbólico."},
-        "hypotheses": {"title": "Hipóteses / easter eggs", "items": [],
-                       "note": "Somente após evidência visual."},
+        "symbolic": {
+            "title": "Camada simbólica",
+            "status": "pending_vision_model",
+            "summary": "Configure XAI_API_KEY ou OPENAI_API_KEY.",
+            "elements": [],
+        },
+        "geopolitical": {
+            "title": "Camada geopolítica / narrativa",
+            "status": "pending_vision_model",
+            "summary": "Disponível após inventário simbólico.",
+        },
+        "memetic": {
+            "title": "Camada memética",
+            "status": "pending_vision_model",
+            "summary": "Disponível após inventário simbólico.",
+        },
+        "hypotheses": {
+            "title": "Hipóteses / easter eggs",
+            "items": [],
+            "note": "Somente após evidência visual.",
+        },
     }
 
     vision_result = None
@@ -108,7 +145,8 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
         try:
             try:
                 vision_result = asyncio.get_event_loop().run_until_complete(
-                    analyze_with_vision(str(p), technical_ctx))
+                    analyze_with_vision(str(p), technical_ctx)
+                )
             except RuntimeError:
                 vision_result = asyncio.run(analyze_with_vision(str(p), technical_ctx))
         except Exception as e:
@@ -124,11 +162,14 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
 
     ocr_result = extract_text(str(p))
     if ocr_result.get("text"):
-        layers["literal"]["facts"].append(f"OCR: {ocr_result['word_count']} palavras extraídas")
+        layers["literal"]["facts"].append(
+            f"OCR: {ocr_result['word_count']} palavras extraídas"
+        )
         if ocr_result.get("possible_microtext"):
             layers["literal"]["facts"].append("Possível microtexto detectado")
         layers["ocr"] = {
-            "title": "OCR / Texto extraído", "status": "ok",
+            "title": "OCR / Texto extraído",
+            "status": "ok",
             "text": ocr_result["text"][:3000],
             "word_count": ocr_result["word_count"],
             "char_count": ocr_result["char_count"],
@@ -140,32 +181,46 @@ def analyze_image(path: str, original_name: str = "", use_vision: bool = True) -
         layers["ocr"] = {
             "title": "OCR / Texto extraído",
             "status": "empty" if ocr_result.get("available") else "unavailable",
-            "text": "", "error": ocr_result.get("error"),
+            "text": "",
+            "error": ocr_result.get("error"),
             "available": ocr_result.get("available"),
         }
 
+    # v0.3 — Esteganografia LSB (camada forense mínima)
+    stego = analyze_lsb(str(p))
+    layers["steganography"] = stego
+
     report = {
         "meta": {
-            "service": "Sublima Decryptor", "version": "0.2.2-ocr",
-            "analyzed_at": now, "original_filename": original_name or p.name,
-            "format": fmt, "dimensions": {"width": width, "height": height},
-            "mode": mode, "file_size_bytes": p.stat().st_size,
-            "visual_density": density, "vision_status": vision_status,
+            "service": "Sublima Decryptor",
+            "version": APP_VERSION,
+            "analyzed_at": now,
+            "original_filename": original_name or p.name,
+            "format": fmt,
+            "dimensions": {"width": width, "height": height},
+            "mode": mode,
+            "file_size_bytes": p.stat().st_size,
+            "visual_density": density,
+            "vision_status": vision_status,
             "vision_configured": vision_configured(),
             "ocr_available": ocr_available(),
+            "stego_lsb": True,
+            "brand": "© DcsProducer®",
         },
         "technical": {
-            "exif": exif, "dominant_colors": colors, "has_exif": bool(exif),
+            "exif": exif,
+            "dominant_colors": colors,
+            "has_exif": bool(exif),
             "ocr_word_count": ocr_result.get("word_count", 0),
+            "lsb_score": stego.get("score"),
+            "lsb_status": stego.get("status"),
         },
         "layers": layers,
-        "disclaimer": (
-            "Interpretações além da camada literal são hipóteses analíticas. "
-            "Não constituem prova de intenção do autor nem de conspiração."
-        ),
+        "disclaimer": FORENSIC_DISCLAIMER,
         "next_steps": [
-            "Configure XAI_API_KEY ou OPENAI_API_KEY para camadas simbólicas.",
-            "Esteganografia (LSB/DCT) planejada para Fase 3.",
+            "Revisar camada literal e OCR antes de hipóteses simbólicas.",
+            "LSB suspeito → complementar com ferramentas forenses externas.",
+            "Opcional: XAI_API_KEY / OPENAI_API_KEY para camadas de visão.",
         ],
         "prompt_hint": {"system_prompt_path": "prompts/SYSTEM_PROMPT.md"},
     }
