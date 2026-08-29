@@ -1,14 +1,13 @@
 # Production — Sublima Decryptor
 
-**Status:** LIVE (aguardando redeploy v0.3.0)  
-**Deployed (inicial):** 2026-08-12  
-**Platform:** Render (Free)  
+**Status:** LIVE  
+**Go-live v0.3.0:** 2026-08-29  
+**Platform:** Render (Free) · Docker · Oregon  
 **URL:** https://sublima-decryptor.onrender.com  
-**Código em main:** **0.3.0**  
-**Produção observada (29/08):** ainda `0.2.2-ocr` até redeploy  
+**Version:** **0.3.0**  
 **Producer DCS® / DcsProducer®**
 
-## Health esperado após redeploy v0.3.0
+## Health (validado 2026-08-29)
 
 ```json
 {
@@ -19,7 +18,13 @@
   "brand": "© DcsProducer®",
   "vision_configured": false,
   "ocr_available": true,
-  "stego_lsb": true
+  "stego_lsb": true,
+  "capabilities": {
+    "technical": true,
+    "ocr": true,
+    "vision": false,
+    "steganography_lsb": true
+  }
 }
 ```
 
@@ -34,29 +39,18 @@
 | Código 0.3.0 em `main` | ✅ |
 | LSB no pipeline | ✅ |
 | Testes locais 5/5 | ✅ |
-| Tag `v0.3.0` no GitHub | ⏳ operador |
-| Redeploy Render | ⏳ operador |
-| Health produção = `0.3.0` | ⏳ após redeploy |
+| Redeploy Render | ✅ 2026-08-29 |
+| Health produção = `0.3.0` | ✅ |
+| Tag `v0.3.0` no GitHub | ⏳ se ainda não publicada |
 
-## Testes de produção anteriores (0.2.2-ocr)
+## Testes de produção anteriores
 
-### First production analyze test
-
-| Field | Value |
-|-------|-------|
-| Date | 2026-08-12 ~10:52 UTC |
+### First (0.2.2-ocr) — 2026-08-12
 | File | neurolumen-logo-brain.png |
-| Dimensions | 1165 × 784 |
-| OCR | available: true |
 | HTTP | 200 |
 
-### Second production analyze test (self-cover)
-
-| Field | Value |
-|-------|-------|
-| Date | 2026-08-16 ~19:42 UTC |
+### Second (self-cover) — 2026-08-16
 | File | IMG_20260814_131019.jpg |
-| Dimensions | 720 × 1421 |
 | OCR | 48 palavras · confidence_avg 84.7 |
 | HTTP | 200 |
 
@@ -66,5 +60,4 @@
 
 - Free tier: cold start ~50s após inatividade.
 - Visão ativa com `XAI_API_KEY` ou `OPENAI_API_KEY` no Render.
-- Após tag + redeploy, atualizar este arquivo com a data real do go-live 0.3.0.
 - © 2026 Producer DCS® / DcsProducer® Creative Studio
