@@ -12,12 +12,8 @@
   Health + analyze estáveis · LSB no relatório · disclaimer · testes 5/5
 - [x] **Redeploy produção v0.3.0** — 2026-08-29  
   Health: `version: "0.3.0"` · `phase: "v0.3-stable"` · `stego_lsb: true`
-
-## Lançamento v0.3.0
-
-- [x] Código + testes + docs
-- [x] Redeploy Render confirmado
-- [ ] Tag `v0.3.0` + Release no GitHub (se ainda pendente)
+- [x] **Tag + Release `v0.3.0`** — 2026-08-29  
+  https://github.com/producerdcs-cpu/sublima-decryptor/releases/tag/v0.3.0
 
 ## Next (pós-lançamento)
 
