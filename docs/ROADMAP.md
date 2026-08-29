@@ -10,12 +10,14 @@
 - [x] Auditoria de produção (GitHub Actions)
 - [x] **v0.3.0 — estabilidade** (código 2026-08-20, testes 2026-08-29)  
   Health + analyze estáveis · LSB no relatório · disclaimer · testes 5/5
+- [x] **Redeploy produção v0.3.0** — 2026-08-29  
+  Health: `version: "0.3.0"` · `phase: "v0.3-stable"` · `stego_lsb: true`
 
-## Lançamento v0.3.0 (em curso)
+## Lançamento v0.3.0
 
-- [ ] Tag `v0.3.0` + Release no GitHub
-- [ ] Redeploy Render
-- [ ] Confirmar health produção `version: "0.3.0"`
+- [x] Código + testes + docs
+- [x] Redeploy Render confirmado
+- [ ] Tag `v0.3.0` + Release no GitHub (se ainda pendente)
 
 ## Next (pós-lançamento)
 
