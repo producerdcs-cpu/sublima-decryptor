@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sublima Decryptor — Fase 1.1</title>
+  <title>Sublima Decryptor — v0.3</title>
   <style>
     :root { --bg:#0c0a09; --card:#1c1917; --border:#292524; --amber:#f59e0b; --violet:#a78bfa; --text:#fafaf9; --muted:#a8a29e; }
     * { box-sizing:border-box; margin:0; padding:0; }
@@ -23,6 +23,7 @@
     .layer h3 { font-size:.85rem; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
     .layer p, .layer li { color:var(--muted); font-size:.9rem; }
     .layer ul { padding-left:1.2rem; margin-top:.35rem; }
+    .layer pre { background:#0c0a09; padding:.75rem; border-radius:.5rem; overflow-x:auto; font-size:.8rem; color:var(--amber); margin-top:.5rem; white-space:pre-wrap; }
     .disclaimer { border-left:3px solid var(--amber); padding:.85rem 1rem; background:#1a1614; font-size:.85rem; color:var(--muted); margin-top:1rem; }
     .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:.6rem; margin-bottom:1rem; }
     .meta-item { background:var(--card); border:1px solid var(--border); border-radius:.5rem; padding:.65rem .8rem; }
@@ -31,9 +32,9 @@
   </style>
 </head>
 <body>
-  <header><div>🔮</div><div><h1>Sublima Decryptor</h1><span>Fase 1.1 · Visão + camadas simbólicas</span></div></header>
+  <header><div>🔮</div><div><h1>Sublima Decryptor</h1><span>v0.3 · OCR + LSB · produção</span></div></header>
   <main>
-    <div class="hero"><h2>Análise forense de imagem</h2><p>Upload → metadados + (opcional) modelo de visão.</p></div>
+    <div class="hero"><h2>Análise forense de imagem</h2><p>Upload → metadados + OCR + esteganografia LSB.</p></div>
     <div class="upload-zone" id="zone">
       <p>📤 Arraste ou <strong style="color:var(--amber)">clique para escolher</strong></p>
       <p style="font-size:.8rem;color:var(--muted);margin-top:.4rem">JPG, PNG, WEBP · máx. 15MB</p>
@@ -44,9 +45,10 @@
     </div>
     <div id="result"></div>
   </main>
-  <footer>Sublima Decryptor v0.2.1-fase1.1 · Producer DCS® · MIT</footer>
+  <footer>Sublima Decryptor v0.3.0 · Producer DCS® / DcsProducer® · MIT</footer>
   <script>
-    const API = window.SUBLIMA_API || 'http://localhost:8000';
+    // Produção por padrão; sobrescreva com window.SUBLIMA_API se precisar de local
+    const API = window.SUBLIMA_API || 'https://sublima-decryptor.onrender.com';
     const zone = document.getElementById('zone'), fileInput = document.getElementById('file');
     const btn = document.getElementById('btn'), preview = document.getElementById('preview');
     const previewImg = document.getElementById('previewImg'), status = document.getElementById('status');
@@ -71,27 +73,43 @@
     });
     function item(l,v){ return '<div class="meta-item"><div class="label">'+l+'</div><div class="value">'+(v||'—')+'</div></div>'; }
     function renderReport(data) {
-      const m = data.meta || {}, layers = data.layers || {};
+      const m = data.meta || {}, layers = data.layers || {}, tech = data.technical || {};
       let html = '<div class="meta-grid">';
       html += item('Formato', m.format);
       html += item('Dimensões', m.dimensions ? m.dimensions.width + '×' + m.dimensions.height : '—');
       html += item('Densidade', m.visual_density);
-      html += item('EXIF', data.technical?.has_exif ? 'Sim' : 'Não');
-      html += item('Visão', m.vision_status || '—') + '</div>';
-      for (const key of ['literal','symbolic','geopolitical','memetic','hypotheses']) {
+      html += item('EXIF', tech.has_exif ? 'Sim' : 'Não');
+      html += item('Visão', m.vision_status || '—');
+      html += item('LSB', tech.lsb_status || (layers.steganography && layers.steganography.status) || '—');
+      html += item('Versão', m.version || '—') + '</div>';
+
+      const order = ['literal','ocr','steganography','symbolic','geopolitical','memetic','hypotheses'];
+      for (const key of order) {
         const L = layers[key]; if (!L) continue;
         html += '<div class="layer"><h3>' + (L.title||key) + '</h3>';
         if (L.summary) html += '<p>' + L.summary + '</p>';
-        if (L.facts?.length) html += '<ul>' + L.facts.map(f => '<li>'+f+'</li>').join('') + '</ul>';
-        if (L.elements?.length) html += '<ul>' + L.elements.map(el => {
+        if (L.facts && L.facts.length) html += '<ul>' + L.facts.map(f => '<li>'+f+'</li>').join('') + '</ul>';
+        if (L.elements && L.elements.length) html += '<ul>' + L.elements.map(el => {
           const n = el.name || el, c = el.category ? ' ['+el.category+']' : '', d = el.description ? ' — '+el.description : '';
           return '<li><strong>'+n+'</strong>'+c+d+'</li>';
         }).join('') + '</ul>';
-        if (L.items?.length) html += '<ul>' + L.items.map(h => {
+        if (L.items && L.items.length) html += '<ul>' + L.items.map(h => {
           const t = h.text || h, conf = h.confidence ? ' ('+h.confidence+')' : '';
           return '<li>'+t+conf+'</li>';
         }).join('') + '</ul>';
+        if (L.score != null) html += '<p>Score LSB: <strong>' + L.score + '</strong></p>';
+        if (L.channels) {
+          html += '<ul>';
+          for (const [ch, info] of Object.entries(L.channels)) {
+            html += '<li><strong>'+ch+'</strong>: entropy='+(info.entropy||'—')+' · ratio='+(info.bit_ratio||'—')+' · '+ (info.flag||'') + '</li>';
+          }
+          html += '</ul>';
+        }
+        if (L.payload_preview) html += '<p><strong>Payload (preview):</strong></p><pre>' + String(L.payload_preview).replace(/</g,'<') + '</pre>';
+        if (L.payload_text) html += '<p><strong>Texto extraído:</strong></p><pre>' + String(L.payload_text).replace(/</g,'<') + '</pre>';
+        if (L.text && key === 'ocr') html += '<pre>' + String(L.text).slice(0,1500).replace(/</g,'<') + '</pre>';
         if (L.status) html += '<p style="margin-top:.4rem;color:var(--amber)">Status: ' + L.status + '</p>';
+        if (L.note) html += '<p style="font-size:.8rem;margin-top:.35rem">' + L.note + '</p>';
         html += '</div>';
       }
       if (data.disclaimer) html += '<div class="disclaimer">' + data.disclaimer + '</div>';
