@@ -14,11 +14,14 @@
   Health: `version: "0.3.0"` · `phase: "v0.3-stable"` · `stego_lsb: true`
 - [x] **Tag + Release `v0.3.0`** — 2026-08-29  
   https://github.com/producerdcs-cpu/sublima-decryptor/releases/tag/v0.3.0
+- [x] **Frontend apontando para URL de produção** — 2026-08-29  
+  `frontend/index.html` → `https://sublima-decryptor.onrender.com` + camada stego
+- [x] **Extração de payload LSB** — 2026-08-29  
+  Extração sequencial + tentativa de texto (utf-8/latin-1/ascii)
 
-## Next (pós-lançamento)
+## Next (backlog)
 
-- [ ] Frontend apontando para URL de produção
-- [ ] Extração de payload LSB (além de score estatístico)
+- [ ] Redeploy Render para ativar extração de payload em produção
 - [ ] Auth + rate limit se tráfego crescer
 - [ ] Fase 2 — pré-processamento / microtexto reforçado
 
