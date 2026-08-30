@@ -8,9 +8,11 @@
 
 > Plataforma de análise forense digital, esteganografia, semiótica computacional e decodificação de mensagens subliminares.
 
-**Producer DCS® / DcsProducer®** | **v0.3.0** — estabilidade + LSB no relatório  
-**Licença:** MIT  
+**DcsProducer® Creative Studio** | **v0.3.0** — estabilidade + LSB no relatório  
+**Licença:** All Rights Reserved (ver [LICENSE](LICENSE) · [NOTICE](NOTICE))  
 **Repositório:** [producerdcs-cpu/sublima-decryptor](https://github.com/producerdcs-cpu/sublima-decryptor)
+
+> ⚠️ Código **source-available** para portfólio. **Não** é licença permissiva (MIT/Apache). Uso, cópia comercial ou redistribuição exigem autorização escrita.
 
 ---
 
@@ -54,9 +56,10 @@ uvicorn app.main:app --reload --port 8000
 
 Detalhes: [docs/DEPLOY.md](docs/DEPLOY.md) · [docs/V0_3.md](docs/V0_3.md) · [CHANGELOG.md](CHANGELOG.md)
 
-## © Autoria
+## © Autoria e marca
 
-**© 2026 Producer DCS® / DcsProducer® Creative Studio**  
-Código sob licença MIT. Nome do produto e identidade visual reservados.
+**© 2026 DcsProducer® Creative Studio**  
+Licença: **All Rights Reserved** — ver [LICENSE](LICENSE) e [NOTICE](NOTICE).  
+Nome do produto, logotipo e identidade visual reservados.
 
 **Sublima Decryptor** — *O que está oculto merece ser compreendido, não temido.*
